@@ -1,0 +1,2 @@
+[20170707-16:32:19][*INFO*][ferup-format.py:35|Process_comb] - Process: test.txt
+[20170707-16:32:19][*INFO*][ferup-format.py:102|<module>] - Operation Finished [Time Cost:0.039 Seconds]
