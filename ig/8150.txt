@@ -1,0 +1,13 @@
+{
+	string pinyin;
+	string lchar;
+	string lpos;
+	string rchar;
+	string rword;
+	string rrword;
+	string rpos;
+}
+%% forcing_rules
+vu23	*	*	*	*	*	*
+%% data
+NOMATCH	=	=	=	=	=	=
