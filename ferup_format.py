@@ -67,7 +67,43 @@ class Format(object):
       self.logger.error(ioerror)
     except Exception as e:
       self.logger.error(e)
-
+      
+  
+  def formatCheck(self):
+    fs = os.listdir(self.options['checkf'])
+    #No combination
+    if self.options['comb'] == 0:
+      dirn = self.options['out']
+      if not os.path.exists(dirn):
+        os.makedirs(dirn)
+      for f in fs:
+        fn = codecs.open(os.path.join(self.options['checkf'], f), 'r', 'utf-8')
+        fo = codecs.open(os.path.join(self.options['out'], f), 'w', 'utf-8')
+        #fo.write("")
+        self.logger.info("Processing: %s"%f)
+        for line in fn:
+          if "Lexicon" not in line:
+            continue
+          line = re.sub('\/POS:[^\s]+\s+',' ',line[8:])
+          fo.write("!%s\n"%line)
+        fo.close()
+        fn.close()
+    else:
+      dirn = os.path.dirname(os.path.abspath(self.options['out']))
+      if not os.path.exists(dirn):
+        os.makedirs(dirn)
+      fo = codecs.open(os.path.join(self.options['out']), 'w', 'utf-8')
+      for f in fs:
+        fn = codecs.open(os.path.join(self.options['checkf'], f), 'r', 'utf-8')
+        self.logger.info("Processing: %s"%f)
+        #fo.write("")
+        for line in fn:
+          if "Lexicon" not in line:
+            continue
+          line = re.sub('[\/POS:[a-z]+\s+]',' ',line[8:])
+          fo.write("!%s"%line)
+        fn.close()
+      fo.close()
       
 if __name__ == '__main__':
   import time
@@ -80,6 +116,7 @@ if __name__ == '__main__':
   parser.add_argument(type=str, action="store", dest="out", default="", help='output file(for comb mode); output dir(for non-comb mode)')
   parser.add_argument(type=str, action="store", dest="task", default="", help='pw - prosody word; ws - word segmentation')
   parser.add_argument("-c", "--comb", action="store", dest="comb", type=int, default=0, help='0: no combination; 1: combination.')
+  parser.add_argument("-f", "--checkf", action="store", dest="checkf", type=str, default=r"D:\Documents\GitHub\Tools\data\corpus\ws_result", help='corpus directory')
 
   args = parser.parse_args()
   options = vars(args)
@@ -97,7 +134,8 @@ if __name__ == '__main__':
 
   allStartTP = time.time()
   appInst = Format(options, logger)
-  appInst.Process()
+  # appInst.Process()
+  appInst.formatCheck()
   allEndTP = time.time()
   logger.info("Operation Finished [Time Cost:%0.3f Seconds]" % float(allEndTP - allStartTP))
 
