@@ -70,27 +70,38 @@ class FilterHomos(object):
     return lists
   
   def genIGTR(self, igs):
-    prefix = "{\n\tstring pinyin;\n\tstring lchar;\n\tstring lpos;\n\tstring rchar;\n\tstring rword;\n\tstring rrword;\n\tstring rpos;\n}\n%% forcing_rules\n"
-    suffix = "%% data\nNOMATCH\t=\t=\t=\t=\t=\t=\n"
-    if not os.path.exists("ig"):
-      os.mkdir("ig")
+    # prefix = "{\n\tstring pinyin;\n\tstring lchar;\n\tstring lpos;\n\tstring rchar;\n\tstring rword;\n\tstring rrword;\n\tstring rpos;\n}\n%% forcing_rules\n"
+    prefix = "{\n\tstring lhplus;\n\tstring char0;\n}\n%% forcing_rules\n"
+    # suffix = "%% data\nNOMATCH\t=\t=\t=\t=\t=\t=\n"
+    suffix = "%% data\nNOMATCH\t=\n"
+    if not os.path.exists("igs"):
+      os.mkdir("igs")
     for ig in igs.items():
       if not self.isChinese(ig[0]) or ig[1][0] == 1:
         continue
       self.logger.info("Generate IGTR: %s"%ig[0])
       self.dictline[ig[1][3]][16] = 4
       fn = hex(ord(ig[0]))[2:].upper()
-      fn = os.path.join('ig', fn+".txt")
-      if os.path.exists(fn):
-        continue
+      fn = os.path.join('igs', fn+".txt")
+      # if os.path.exists(fn):
+        # continue
       with codecs.open(fn, 'w', 'utf-8') as fo:
         fo.write(prefix)
-        fo.write("%s\t*\t*\t*\t*\t*\t*\n"%ig[1][2])
+        # fo.write("%s\t*\t*\t*\t*\t*\t*\n"%ig[1][2])
+        fo.write("%s\t%s\n"%(ig[1][2], ig[0]))
         fo.write(suffix)
     with codecs.open("dct0711.u08", 'w', 'utf-8') as fo:
       for rd in self.dictline:
         rd = list(map(lambda x:  str(x), rd))
         fo.write("%s\n"%"|".join(rd))
+    with codecs.open("list_igtree.txt","w","utf-8") as iglist:
+      for ig in igs.keys():
+        if not self.isChinese(ig) or igs[ig][0] == 1:
+          continue
+        orth = ig
+        hexo = hex(ord(orth))[2:].upper()
+        lhp = igs[ig][2]
+        iglist.write("%s\t%s\t%s\n"%(hexo, orth, lhp))
   
   def process(self):
     dct, igs = self.loadDct()
