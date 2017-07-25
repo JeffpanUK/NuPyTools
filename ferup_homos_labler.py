@@ -18,14 +18,23 @@ class HmogrpyAuto(object):
     self.options = options
     self.logger = logger
     self.words = set([])
-    self.lhp = options['lhp']
+    self.lhp = ""
+    if not os.path.exists(options['outdir']):
+      os.mkdir(options['outdir'])
     os.system("chcp 65001")
    
-  def loadDct(self):
+  def loadDct(self, char):
+    lhps = set([])
     with codecs.open(self.options['dct'], 'r', 'utf-8') as dctf:
       for line in dctf:
         word = line.strip().split('|')[0]
+        if word == char:
+          lhps.add(line.strip().split('|')[3])
         self.words.add(word)
+      lhps = ",".join(list(lhps))
+      lhps = re.sub("\{","[",lhps)
+      lhps = re.sub("\}","]",lhps)
+    self.lhp="{%s}"%(lhps)
 
   def hex2char(self, _hex):
     char = chr(int("0x"+_hex, 16))
@@ -33,39 +42,40 @@ class HmogrpyAuto(object):
     return char
     
   def process(self):
-    char = self.hex2char(os.path.basename(self.options['auto'])[:-5])
-    fo = codecs.open(self.options['auto']+'new','w','utf-8')
-    with codecs.open(self.options['auto'], 'r', 'utf-8') as fn:
-      for line in fn:
-        if "AUTO-Lexi" in line:
-          line = line.strip().split()
-          line = list(map(lambda x: x.split("/"), line))
-          pos = list(map(lambda x: x[1], line))
-          words = list(map(lambda x: x[0], line))
-          head = words[0].split(':')[0]
-          words[0] = words[0].split(':')[1]
-          for ind, word in enumerate(words):
-            if char in word and word not in list(self.words):
-              tmp = []
-              for i in word:
-                if i == char:
-                  tmp.append("%s%s"%(i, self.lhp))
-                else:
-                  tmp.append(i)
-              words[ind] = ''.join(tmp)
-          fo.write("%s:"%head)
-          for w,p in zip(words, pos):
-            fo.write("%s/%s\s\s"%(w,p))
-          fo.write("\n")
-        else:
-          fo.write(line)
-          
-              
-              
-    
-        
-
-
+    fs = list(filter(lambda x: x[-4:] == "auto", os.listdir(self.options['auto'])))
+    pattern = re.compile('[\,\.\;\:\<\>\?\!\'\"\%\(\)\[\]\{\}\-\_\=\+]')
+    for f in fs:
+      fn = os.path.join(self.options['auto'], f)
+      char = self.hex2char(os.path.basename(fn)[:-5])
+      self.loadDct(char)
+      fo = codecs.open(os.path.join(self.options['outdir'], os.path.basename(fn)),'w','utf-8')
+      with codecs.open(fn, 'r', 'utf-8') as fn:
+        for line in fn:
+          if "AUTO-Lexi" in line:
+            line = line.strip().split()
+            line = list(map(lambda x: x.split("/"), line))
+            pos = list(map(lambda x: x[1], line))
+            words = list(map(lambda x: x[0], line))
+            head = words[0].split(':')[0]
+            words[0] = words[0].split(':')[1]
+            for ind, word in enumerate(words):
+              clean_word = re.sub(pattern,'',word)
+              if char in clean_word and (len(clean_word) == 1 or clean_word not in list(self.words)):
+                tmp = []
+                for i in word:
+                  if i == char:
+                    tmp.append("%s%s"%(i, self.lhp))
+                  else:
+                    tmp.append(i)
+                words[ind] = ''.join(tmp)
+            fo.write("%s:"%head)
+            for w,p in zip(words, pos):
+              fo.write("%s/%s  "%(w,p))
+            fo.write("\n")
+          else:
+            fo.write(line)
+            
+  
 if __name__ == '__main__':
   import time
   import logging
@@ -74,8 +84,8 @@ if __name__ == '__main__':
   parser = ArgumentParser(description='ferup_homos_labeler')
   parser.add_argument("--version", action="version", version="ferup_homos_labeler 1.0")
   parser.add_argument(type=str, action="store", dest="auto", default="", help='input auto file')
-  parser.add_argument(type=str, action="store", dest="lhp", default="", help='input lhp')
-  parser.add_argument("-d", "--dict", action="store", dest="dct", default="dct0711.u08", help='dictionary.')
+  parser.add_argument("-o", "--out", action="store", dest="outdir", default="new_auto_file", help='input auto file')
+  parser.add_argument("-d", "--dict", action="store", dest="dct", default=r"D:\repos\clc\clc_shanghai\lingware-data\dct\shx\dct.u08", help='dictionary.')
 
   args = parser.parse_args()
   options = vars(args)

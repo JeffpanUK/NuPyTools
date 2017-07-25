@@ -1,0 +1,1 @@
+#define USHRT_MAX LH_U16_MAX

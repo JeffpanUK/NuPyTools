@@ -1,0 +1,29 @@
+{
+string prm;
+string pos_previous_word;
+string pos_current_word;
+string pos_next_word;
+string phr_previous_word;
+string phr_current_word;
+string phr_next_word;
+string position;
+string prm_previous_word;
+string accentable;
+string compound;
+}
+%% forcing_rules
+2 * * * * * * * * * B-LS
+1 * * * * * * * * * I-LS
+1 * * * * * * * * * B-RS
+2 * * * * * * * * * I-RS
+2 * NN NN * B-NP I-NP 2 * * null
+2 DT NN NN * * I-NP 2 * * null
+1 NN NN * * I-NP * 3 2 * null
+2 * NN NNS * B-NP I-NP 2 * * null
+2 DT NN NNS * * I-NP 2 * * null
+1 NN NNS * * I-NP * 3 2 * null
+0 * * * * * * * * F null
+2 * * * * * * * * L null
+1 * * * * * * * * A null
+%% data
+0 null null null null null null null null null null

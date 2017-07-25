@@ -1,0 +1,3 @@
+LIBRARY igtest
+EXPORTS
+igtest	@1
