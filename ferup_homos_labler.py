@@ -32,8 +32,7 @@ class HmogrpyAuto(object):
           lhps.add(line.strip().split('|')[3])
         self.words.add(word)
       lhps = ",".join(list(lhps))
-      lhps = re.sub("\{","[",lhps)
-      lhps = re.sub("\}","]",lhps)
+      lhps = re.sub("\{([VNABCD])\}","[\1]",lhps)
     self.lhp="{%s}"%(lhps)
 
   def hex2char(self, _hex):
