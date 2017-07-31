@@ -32,7 +32,9 @@ class HmogrpyAuto(object):
           lhps.add(line.strip().split('|')[3])
         self.words.add(word)
       lhps = ",".join(list(lhps))
-      lhps = re.sub("\{([VNABCD])\}","[\1]",lhps)
+      pattern = re.compile("\{([VNABCD]+)\}")
+      lhps = re.sub(pattern,r"[\1]",lhps)
+    self.logger.debug(lhps)
     self.lhp="{%s}"%(lhps)
 
   def hex2char(self, _hex):
@@ -98,7 +100,7 @@ if __name__ == '__main__':
   stream_handler = logging.StreamHandler()
   stream_handler.setFormatter(formatter)
   logger.addHandler(stream_handler)
-  logger.setLevel(logging.INFO)
+  logger.setLevel(logging.DEBUG)
 
   allStartTP = time.time()
   appInst = HmogrpyAuto(options, logger)
