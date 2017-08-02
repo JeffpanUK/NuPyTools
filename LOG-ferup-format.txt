@@ -1,2 +1,10 @@
-[20170707-16:32:19][*INFO*][ferup-format.py:35|Process_comb] - Process: test.txt
-[20170707-16:32:19][*INFO*][ferup-format.py:102|<module>] - Operation Finished [Time Cost:0.039 Seconds]
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: DAJS_1.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: DAJS_2.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: DAJS_3.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: DAJS_4.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: FHJY_1.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: FHJY_2.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: FHJY_3.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: FHJY_4.check
+[20170711-16:48:52][*INFO*][ferup_format.py:83|formatCheck] - Processing: ZALN.check
+[20170711-16:48:52][*INFO*][ferup_format.py:140|<module>] - Operation Finished [Time Cost:0.596 Seconds]

@@ -105,6 +105,5 @@ if __name__ == '__main__':
   allStartTP = time.time()
   appInst = HmogrpyAuto(options, logger)
   appInst.process()
-  # appInst.formatCheck()
   allEndTP = time.time()
   logger.info("Operation Finished [Time Cost:%0.3f Seconds]" % float(allEndTP - allStartTP))
