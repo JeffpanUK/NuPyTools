@@ -1,0 +1,8 @@
+{
+	string lhplus;
+	string char0;
+}
+%% forcing_rules
+zo-23	仇
+%% data
+NOMATCH	=

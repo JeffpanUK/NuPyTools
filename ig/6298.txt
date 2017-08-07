@@ -1,0 +1,8 @@
+{
+	string lhplus;
+	string char0;
+}
+%% forcing_rules
+t&s$:~55?	折
+%% data
+NOMATCH	=
