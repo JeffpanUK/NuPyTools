@@ -31,6 +31,7 @@ class ldbMod(object):
       LexNum = 0
       LexCount = 0
       keep_sil = False
+      tmp_keep_sil = False
       fn = os.path.join(self.options['ldbs'], f)
       with codecs.open(fn,'r','utf-8') as fi:
         fo = open(os.path.join(self.options['output'], f), 'w', encoding='utf-8')
@@ -39,7 +40,9 @@ class ldbMod(object):
           if r"<LD_W_ORTH>" in line:
             text = re.search(' *<LD_W_ORTH> (.*) </LD_W_ORTH>', line).group(1)
             if re.search(self.pattern, text) is not None:
-              keep_sil = True
+              tmp_keep_sil = True
+            else:
+              tmp_keep_sil = False
             tmpLexNum = len(text.split())
 
             
@@ -51,28 +54,29 @@ class ldbMod(object):
               isPhrase = True
               LexNum = tmpLexNum
             elif text == "WORD_DCT" or text == "WORD_CROSSTOKEN" or text == "WORD_SKIPCROSSTOKEN":
-              keep_sil = False
               isPhrase = False
               LexCount += 1
               if LexCount == LexNum:
-   
                 find_sil = True
-              else:
-                find_sil = False
             fo.write(line)
           elif isPhrase and r"<LD_W_SILDUR>" in line:
             LexCount = 0
+            keep_sil = (True and tmp_keep_sil)
             text = re.search(' *<LD_W_SILDUR> (.*) </LD_W_SILDUR>', line).group(1)
             if keep_sil is False:
+              print('find')
               sil_record = "0"
               fo.write("    <LD_W_SILDUR> 0 </LD_W_SILDUR>\n")
             else:
               sil_record = text
               keep_sil = False
+              tmp_keep_sil = False
               fo.write(line)
           elif find_sil and r"<LD_W_SILDUR>" in line:
             find_sil = False
-            fo.write("    <LD_W_SILDUR> %s <LD_W_SILDUR>\n"%sil_record)
+            fo.write("    <LD_W_SILDUR> %s </LD_W_SILDUR>\n"%sil_record)
+            if sil_record == "0":
+              print(sil_record)
           else:
             fo.write(line)
 

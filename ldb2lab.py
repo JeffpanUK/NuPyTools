@@ -4,14 +4,17 @@ import os,sys
 import codecs
 import re
 import shutil
+from collections import OrderedDict
 
 class ldb2lab(object):
   """docstring for ldb2lab"""
   def __init__(self, options, logger):
     self.logger = logger
     self.options = options
-    if not os.path.exists(options['output']):
+    if os.path.isdir(options['output']) and not os.path.exists(options['output']):
       os.mkdir(options['output'])
+    elif not os.path.isdir(options['output']):
+      os.remove(options['output'])
     
 
   def loadldbs(self):
@@ -36,6 +39,39 @@ class ldb2lab(object):
           if item[1] == "0":
             continue
           fo.write("%s\t%s\n"%(item[0], item[1]))
+
+  def genText(self):
+    fs = sorted(os.listdir(self.options['ldbs']), key=lambda x: int(x.split('_')[1].split('.')[0]))
+    for f in fs:
+      self.logger.info("Process: %s"%f)
+      fn = os.path.join(self.options['ldbs'], f)
+      fon = self.options['output']
+      texts = OrderedDict({})
+      with codecs.open(fn,'r','utf-8') as fi:
+        isPhrase = False
+        for line in fi:
+          line = line.strip()
+          if r"LD_W_ORTH" in line:
+            tmp_text = re.search(' *<LD_W_ORTH> (.*) </LD_W_ORTH>', line).group(1)
+          elif r"WORD_PHRASE" in line:
+            text = re.sub('[ -]','',tmp_text)
+            isPhrase = True
+          elif isPhrase and r"LD_W_SILDUR" in line:
+            isPhrase = False
+            sil = int(re.search(' *<LD_W_SILDUR> (.*) </LD_W_SILDUR>', line).group(1))
+            if sil == 0:
+              texts[text] = 'weak'
+            else:
+              texts[text] = 'strong'
+      with codecs.open(fon, 'a', 'utf-8') as fo:
+        for item in texts.items():
+          fo.write("%s"%item[0])
+          if item[1] == 'weak':
+            fo.write('-')
+          else:
+            fo.write('  ')
+        fo.write('\n')
+
 
 if __name__ == '__main__':
   import time
@@ -63,6 +99,7 @@ if __name__ == '__main__':
 
   allStartTP = time.time()
   appInst = ldb2lab(options, logger)
-  appInst.loadldbs()
+  # appInst.loadldbs()
+  appInst.genText()
   allEndTP = time.time()
   logger.info("Operation Finished [Time Cost:%0.3f Seconds]" % float(allEndTP - allStartTP))
