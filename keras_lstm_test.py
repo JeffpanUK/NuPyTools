@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 #/urs/bin/env/ py3
 import keras
+from keras.utils import np_utils
 from keras.models import Model, Sequential, load_model
 from keras.layers import Dense, Embedding, LSTM, TimeDistributed, Input, merge, Bidirectional
 import numpy as np
@@ -9,6 +10,10 @@ import codecs
 import pandas as pd
 import re
 import pdb
+import tensorflow as tf
+import keras.backend.tensorflow_backend as KTF
+
+KTF.set_session(tf.Session(config=tf.ConfigProto(device_count={'gpu':0})))
 
 class BlstmWS(object):
   """docstring for BlstmWS"""
@@ -16,14 +21,16 @@ class BlstmWS(object):
     self.options = options
     self.logger = logger
     self.tag = pd.Series({'S':0, 'B':1, 'M':2, 'E':3}) 
+    self.tag_size = len(self.tag)
+    print(self.tag_size)
     if options['task'] in ["training", "auto"]:
       self.training_data = self.processLabeled(self.options['corpus'])
       self.charDct = self.genWordDct()
-      print()
       self.training_data = self.genIOData(self.training_data)
     else:
       self.charDct = self.loadWordDct()
-    self.tag_size = len(self.tag)
+    
+    
 
 
   def wordCount(self, corpus):
@@ -52,7 +59,8 @@ class BlstmWS(object):
             tmp = [[],[]]
           else:
             tmp[0].append(line[0])
-    #generate dataframe
+            tmp[1].append(line[1])
+
     data = pd.DataFrame()
     data['sent'] = sent
     data['label'] = label
@@ -197,7 +205,7 @@ if __name__ == '__main__':
   parser.add_argument("-td", "--testdir", action="store", dest="testDir", default="ws_test", help='batch size')
   parser.add_argument("-m", "--model", action="store", dest="model", default="keras_BLSTM_WS.kmd", help='model name')
   parser.add_argument("-o", "--output", action="store", dest="output", default="ws_result.txt", help='output text')
-  parser.add_argument("-e", "--epochs", action="store", dest="epochs", default=2, help='epochs')
+  parser.add_argument("-e", "--epochs", type=int, action="store", dest="epochs", default=2, help='epochs')
   parser.add_argument("-task", "--task", action="store", dest="task", default="auto", help='epochs')
   parser.add_argument("-c", "--charDct", action="store", dest="charDct", default="charDct.pb", help='char dictionary')
 
