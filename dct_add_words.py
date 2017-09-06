@@ -46,7 +46,7 @@ class AddWord(object):
       if w not in all_words and w in ref_words.keys():
         new_dct.write('%s|%s\n'%(w, ref_words[w]))
       elif w not in all_words and w not in ref_words.keys():
-        new_dct.write("%s|||pi51|basic_ws_mnc|||Ag\\Ng\\j\\nr|mwh|||no|SHC||||4"%w)
+        new_dct.write("%s|||pi51|basic_ws_mnc|||Ag\\Ng\\j\\nr|mwh|||no|SHC||||4\n"%w)
 
 
 if __name__ == '__main__':
