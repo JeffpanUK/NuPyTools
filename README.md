@@ -1,11 +1,4 @@
 # NuPyTools
-python tools for Nuance
-
-## pcm2wav.py
-
-**usage:** `pcm2wav.py [input pcm] [output wav]`
-
-**description**: convert .pcm file into audio file .wav
 
 ## ferup-format.py
 
