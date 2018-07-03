@@ -37,7 +37,7 @@ class PERFORMANCE(object):
             os.system("mv vocalizer_0.txt vocalizer_%d.txt"%(i+1))
 
     def result_parsing(self, idx, fname):
-        f = codecs.open(fname, 'r', 'utf-8')
+        f = open(fname, 'r', encoding='utf-8',erros='ignore')
         init_time = 0
         latency = 0
         init_time_ready = False
